@@ -1,3 +1,4 @@
+import { type Mock } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
 
@@ -56,7 +57,7 @@ describe('App', () => {
   it('fetches fact from API when "Get Trivia" button is clicked', async () => {
     const mockFact = "42 is the answer to life, the universe, and everything.";
     const mockResponse = { text: vi.fn().mockResolvedValue(mockFact) };
-    (global.fetch as unknown as jest.Mock).mockResolvedValue(mockResponse);
+    (global.fetch as Mock).mockResolvedValue(mockResponse);
 
     render(<App />);
     const numberInput = screen.getByLabelText('Trivia Number:');
@@ -79,7 +80,7 @@ describe('App', () => {
   });
 
   it('displays error message when API call fails', async () => {
-    (global.fetch as unknown as jest.Mock).mockRejectedValue(new Error('API Error'));
+    (global.fetch as Mock).mockRejectedValue(new Error('API Error'));
 
     render(<App />);
     const numberInput = screen.getByLabelText('Trivia Number:');
