@@ -1,21 +1,38 @@
 import { useState } from 'react'
 import './App.css'
 import Button from './components/Button'
+import Input from './components/Input'
 
 function App() {
   const [showMessage, setShowMessage] = useState(false)
+  const [numberFact, setNumberFact] = useState("No fact available")
   const labelButton = showMessage ? 'Hide' : 'Show'
-  const message = "This is my first React app with TypeScript"
-
+  
   function handleClick() {
-    setShowMessage(!showMessage)
+    setShowMessage((prev) => !prev)
+  }
+
+  async function handleInputChange(value: number) {
+    if (value > 0) {
+      try {
+        const response = await fetch(`http://numbersapi.com/${value}`)
+        const data = await response.text()
+        setNumberFact(data)
+      } catch (error) {
+        console.error('Error fetching number fact:', error)
+        setNumberFact('Failed to fetch fact about this number')
+      }
+    } else {
+      setNumberFact("No fact available")
+    }
   }
 
   return (
     <>
-      <h1>Hello World!!</h1>
+      <h1>Trivia World</h1>
+      <Input onChange={handleInputChange} label='Trivia Number' />
       <Button label={labelButton} onClick={handleClick} />
-      {showMessage && <p>{message}</p>}
+      {showMessage && numberFact && <p>{numberFact}</p>}
     </>
   )
 }
