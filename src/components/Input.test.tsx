@@ -3,20 +3,20 @@ import Input from './Input';
 
 describe('Input Component', () => {
   it('renders an input element', () => {
-    render(<Input label="Test Label" min={1} max={10} onChange={() => {}} />);
+    render(<Input label="Test Label" min={1} max={10} value={1} onChange={() => {}} />);
     const inputElement = screen.getByRole('spinbutton');
     expect(inputElement).toBeInTheDocument();
   });
 
   it('displays the label text', () => {
-    render(<Input label="Test Label" min={1} max={10} onChange={() => {}} />);
+    render(<Input label="Test Label" min={1} max={10} value={1} onChange={() => {}} />);
     const labelElement = screen.getByText('Test Label');
     expect(labelElement).toBeInTheDocument();
   });
 
   it('calls onChange with the correct value when input changes', () => {
     const handleChange = vi.fn();
-    render(<Input label="Test Label" min={1} max={10} onChange={handleChange} />);
+    render(<Input label="Test Label" min={1} max={10} value={1} onChange={handleChange} />);
     const inputElement = screen.getByRole('spinbutton');
 
     fireEvent.change(inputElement, { target: { value: '5' } });
@@ -25,7 +25,7 @@ describe('Input Component', () => {
 
   it('does not call onChange if the input value is not a number', () => {
     const handleChange = vi.fn();
-    render(<Input label="Test Label" min={1} max={10} onChange={handleChange} />);
+    render(<Input label="Test Label" min={1} max={10} value={1} onChange={handleChange} />);
     const inputElement = screen.getByRole('spinbutton');
 
     fireEvent.change(inputElement, { target: { value: 'abc' } });
@@ -33,7 +33,7 @@ describe('Input Component', () => {
   });
 
   it('respects the min and max attributes', () => {
-    render(<Input label="Test Label" min={1} max={10} onChange={() => {}} />);
+    render(<Input label="Test Label" min={1} max={10} value={1} onChange={() => {}} />);
     const inputElement = screen.getByRole('spinbutton');
 
     expect(inputElement).toHaveAttribute('min', '1');
@@ -41,7 +41,7 @@ describe('Input Component', () => {
   });
 
   it('uses default min and max values when not specified', () => {
-    render(<Input label="Test Label" onChange={() => {}} />);
+    render(<Input label="Test Label" value={0} onChange={() => {}} />);
     const inputElement = screen.getByRole('spinbutton');
     
     expect(inputElement).toHaveAttribute('min', '0');
@@ -49,7 +49,7 @@ describe('Input Component', () => {
   });
 
   it('links label to input with the proper id', () => {
-    render(<Input label="Test Label" min={1} max={10} onChange={() => {}} />);
+    render(<Input label="Test Label" min={1} max={10} value={1} onChange={() => {}} />);
     const labelElement = screen.getByText('Test Label');
     const inputElement = screen.getByRole('spinbutton');
     
@@ -58,11 +58,17 @@ describe('Input Component', () => {
   });
 
   it('uses custom id when provided', () => {
-    render(<Input label="Test Label" min={1} max={10} onChange={() => {}} id="custom-id" />);
+    render(<Input label="Test Label" min={1} max={10} value={1} onChange={() => {}} id="custom-id" />);
     const labelElement = screen.getByText('Test Label');
     const inputElement = screen.getByRole('spinbutton');
     
     expect(labelElement).toHaveAttribute('for', 'custom-id');
     expect(inputElement).toHaveAttribute('id', 'custom-id');
+  });
+
+  it('reflects value prop in the input element', () => {
+    render(<Input label="Test Label" min={1} max={10} value={7} onChange={() => {}} />);
+    const inputElement = screen.getByRole('spinbutton');
+    expect(inputElement).toHaveValue(7);
   });
 });
