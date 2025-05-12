@@ -77,7 +77,7 @@ describe('App', () => {
     fireEvent.change(numberInput, { target: { value: '42' } });
     
     // Check if fetch was called with correct URL
-    expect(global.fetch).toHaveBeenCalledWith('http://numbersapi.com/42');
+    expect(global.fetch).toHaveBeenCalledWith('https://numbersapi.com/42');
     
     // Click the button to show the fact
     const button = screen.getByRole('button');
@@ -102,7 +102,7 @@ describe('App', () => {
     fireEvent.change(numberInput, { target: { value: '42' } });
     
     // Check if fetch was called with correct URL
-    expect(global.fetch).toHaveBeenCalledWith('http://numbersapi.com/42');
+    expect(global.fetch).toHaveBeenCalledWith('https://numbersapi.com/42');
     
     // Click the button to show the fact
     const button = screen.getByRole('button');

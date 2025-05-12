@@ -15,7 +15,7 @@ function App() {
   async function handleInputChange(value: number) {
     if (value > 0) {
       try {
-        const response = await fetch(`http://numbersapi.com/${value}`)
+        const response = await fetch(`https://numbersapi.com/${value}`)
         const data = await response.text()
         setNumberFact(data)
       } catch (error) {
