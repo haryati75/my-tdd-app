@@ -30,7 +30,7 @@ function App() {
   return (
     <>
       <h1>Trivia World</h1>
-      <Input onChange={handleInputChange} label='Trivia Number' />
+      <Input onChange={handleInputChange} label='Trivia Number' min={1} max={1000} />
       <Button label={labelButton} onClick={handleClick} />
       {showMessage && numberFact && <p>{numberFact}</p>}
     </>
