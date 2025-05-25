@@ -24,9 +24,9 @@ describe('App', () => {
     expect(screen.getByText('Trivia World')).toBeInTheDocument();
   });
 
-  it('shows "Load Trivia" button', () => {
+  it('shows "Get New Trivia" button', () => {
     render(<App />);
-    const button = screen.getByRole('button', { name: 'Load Trivia' });
+    const button = screen.getByRole('button', { name: 'Get New Trivia' });
     expect(button).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe('App', () => {
     expect(screen.getByText('No trivia available')).toBeInTheDocument();
   });
 
-  it('shows trivia question, category, and answer buttons after clicking "Load Trivia"', async () => {
+  it('shows trivia question, category, and answer buttons after clicking "Get New Trivia"', async () => {
     const mockQuestion = 'Shaquille O&rsquo;Neal has only made one three pointer in his career.';
     const mockCategory = 'Sports';
     const mockCorrectAnswer = 'True';
@@ -48,7 +48,7 @@ describe('App', () => {
     ]);
 
     render(<App />);
-    const getTriviaButton = screen.getByRole('button', { name: 'Load Trivia' });
+    const getTriviaButton = screen.getByRole('button', { name: 'Get New Trivia' });
     fireEvent.click(getTriviaButton);
 
     // Wait for question and category to appear (decoded)
@@ -75,7 +75,7 @@ describe('App', () => {
     ]);
 
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Load Trivia' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Get New Trivia' }));
 
     await waitFor(() => {
       expect(screen.getByText('2 + 2 = 4?')).toBeInTheDocument();
@@ -99,7 +99,7 @@ describe('App', () => {
     ]);
 
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Load Trivia' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Get New Trivia' }));
 
     await waitFor(() => {
       expect(screen.getByText('The earth is flat.')).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe('App', () => {
     ]);
 
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Load Trivia' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Get New Trivia' }));
 
     await waitFor(() => {
       expect(screen.getByText('The sky is green.')).toBeInTheDocument();
@@ -147,7 +147,7 @@ describe('App', () => {
     ]);
 
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Load Trivia' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Get New Trivia' }));
 
     await waitFor(() => {
       expect(screen.getByText('Water boils at 100°C at sea level.')).toBeInTheDocument();
@@ -162,10 +162,10 @@ describe('App', () => {
     (fetchTrivia as any).mockRejectedValue(new Error('API Error'));
 
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Load Trivia' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Get New Trivia' }));
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to fetch trivia about this number')).toBeInTheDocument();
+      expect(screen.getByText('Failed to fetch trivia from server')).toBeInTheDocument();
     });
   });
 

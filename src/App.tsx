@@ -20,7 +20,7 @@ function App() {
     try {
       const results = await fetchTrivia(num); 
       if (results.length === 0) {
-        setFactMessage("No trivia results fetched");
+        setFactMessage("No trivia fetched");
         return;
       }
       const decodedQuestion = decodeHtml(results[0].question);
@@ -29,8 +29,8 @@ function App() {
       setCategory(decodedCategory);
       setCorrectAnswer(results[0].correct_answer);
     } catch (error) {
-      console.error('Error fetching number fact:', error);
-      setFactMessage('Failed to fetch trivia about this number');
+      console.error('Error fetching trivia:', error);
+      setFactMessage('Failed to fetch trivia from server');
     }
   }
 
@@ -53,7 +53,7 @@ function App() {
     <>
       <h1>Trivia World</h1>
       <div>
-        <Button label={!hasAnswered ? "Load Trivia" : "Next Trivia"} onClick={handleGetTriviaClick} />
+        <Button label={!hasAnswered ? "Get New Trivia" : "Next Trivia"} onClick={handleGetTriviaClick} disabled={factMessage.includes("Loading")} />
       </div>
       <div className="card">
         {category && <h4>{category}</h4>}
