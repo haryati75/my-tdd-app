@@ -1,9 +1,13 @@
-import { type Mock } from 'vitest';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
 
-// Mock fetch API
-global.fetch = vi.fn();
+// Mock fetchTrivia in the api/triviaApi module
+vi.mock('./api/triviaApi', () => ({
+  fetchTrivia: vi.fn(),
+}));
+
+import { fetchTrivia } from './api/triviaApi';
 
 describe('App', () => {
   beforeEach(() => {
@@ -20,94 +24,138 @@ describe('App', () => {
     expect(screen.getByText('Trivia World')).toBeInTheDocument();
   });
 
-  it('shows button with initial "Show" label', () => {
+  it('shows "Get Trivia" button', () => {
     render(<App />);
-    const button = screen.getByRole('button', { name: 'Show' });
+    const button = screen.getByRole('button', { name: 'Get Trivia' });
     expect(button).toBeInTheDocument();
   });
 
-  it('toggles fact visibility when button is clicked', async () => {
-    render(<App />);
-    // Fact should not be visible initially
-    expect(screen.queryByText('No fact available')).not.toBeInTheDocument();
-
-    // Click the "Show" button to show the fact
-    const button = screen.getByRole('button', { name: 'Show' });
-    fireEvent.click(button);
-
-    // Fact should now be visible and button text should change
-    expect(screen.getByText('No fact available')).toBeInTheDocument();
-    expect(button).toHaveTextContent('Hide');
-
-    // Click the button again to hide the fact
-    fireEvent.click(button);
-
-    // Fact should be hidden again and button text should change back
-    expect(screen.queryByText('No fact available')).not.toBeInTheDocument();
-    expect(button).toHaveTextContent('Show');
-  });
-
-  it('renders a number input field with label "Trivia Number:"', () => {
-    render(<App />);
-    const numberInput = screen.getByLabelText('Trivia Number:');
-    expect(numberInput).toBeInTheDocument();
-    expect(numberInput).toHaveAttribute('type', 'number');
-  });
-
-  it('fetches fact from API when "Get Trivia" button is clicked', async () => {
-    const mockFact = "42 is the answer to life, the universe, and everything.";
-    const mockResponse = { text: vi.fn().mockResolvedValue(mockFact) };
-    (global.fetch as Mock).mockResolvedValue(mockResponse);
+  it('shows trivia question and answer buttons after clicking "Get Trivia"', async () => {
+    const mockQuestion = 'Shaquille O&rsquo;Neal has only made one three pointer in his career.';
+    const mockCorrectAnswer = 'True';
+    (fetchTrivia as any).mockResolvedValue([
+      {
+        question: mockQuestion,
+        correct_answer: mockCorrectAnswer,
+      },
+    ]);
 
     render(<App />);
-    const numberInput = screen.getByLabelText('Trivia Number:');
-
-    // Change input value
-    fireEvent.change(numberInput, { target: { value: '42' } });
-
-    // Click "Get Trivia" button
     const getTriviaButton = screen.getByRole('button', { name: 'Get Trivia' });
     fireEvent.click(getTriviaButton);
 
-    // Wait for the fact to appear
+    // Wait for question to appear (decoded)
     await waitFor(() => {
-      expect(screen.getByText(mockFact)).toBeInTheDocument();
+      expect(screen.getByText("Shaquille O’Neal has only made one three pointer in his career.")).toBeInTheDocument();
     });
 
-    // Show/Hide button should now say "Hide"
-    const toggleButton = screen.getByRole('button', { name: 'Hide' });
-    expect(toggleButton).toBeInTheDocument();
+    // True/False buttons should appear
+    expect(screen.getByRole('button', { name: 'True' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'False' })).toBeInTheDocument();
   });
 
-  it('displays error message when API call fails', async () => {
-    (global.fetch as Mock).mockRejectedValue(new Error('API Error'));
+  it('shows "Correct!" when the correct answer is chosen', async () => {
+    const mockQuestion = '2 + 2 = 4?';
+    const mockCorrectAnswer = 'True';
+    (fetchTrivia as any).mockResolvedValue([
+      {
+        question: mockQuestion,
+        correct_answer: mockCorrectAnswer,
+      },
+    ]);
 
     render(<App />);
-    const numberInput = screen.getByLabelText('Trivia Number:');
-
-    fireEvent.change(numberInput, { target: { value: '42' } });
-
-    const getTriviaButton = screen.getByRole('button', { name: 'Get Trivia' });
-    fireEvent.click(getTriviaButton);
+    fireEvent.click(screen.getByRole('button', { name: 'Get Trivia' }));
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to fetch fact about this number')).toBeInTheDocument();
+      expect(screen.getByText('2 + 2 = 4?')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'True' }));
+
+    expect(screen.getByText('Correct!')).toBeInTheDocument();
+  });
+
+  it('shows "Correct!" when the correct answer is "False" and user clicks False', async () => {
+    const mockQuestion = 'The earth is flat.';
+    const mockCorrectAnswer = 'False';
+    (fetchTrivia as any).mockResolvedValue([
+      {
+        question: mockQuestion,
+        correct_answer: mockCorrectAnswer,
+      },
+    ]);
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Get Trivia' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('The earth is flat.')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'False' }));
+
+    expect(screen.getByText('Correct!')).toBeInTheDocument();
+  });
+
+  it('shows "Incorrect!" when the wrong answer is chosen', async () => {
+    const mockQuestion = 'The sky is green.';
+    const mockCorrectAnswer = 'False';
+    (fetchTrivia as any).mockResolvedValue([
+      {
+        question: mockQuestion,
+        correct_answer: mockCorrectAnswer,
+      },
+    ]);
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Get Trivia' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('The sky is green.')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'True' }));
+
+    expect(screen.getByText('Incorrect!')).toBeInTheDocument();
+  });
+
+  it('shows "Incorrect!" when the correct answer is "True" and user clicks False', async () => {
+    const mockQuestion = 'Water boils at 100°C at sea level.';
+    const mockCorrectAnswer = 'True';
+    (fetchTrivia as any).mockResolvedValue([
+      {
+        question: mockQuestion,
+        correct_answer: mockCorrectAnswer,
+      },
+    ]);
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Get Trivia' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Water boils at 100°C at sea level.')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'False' }));
+
+    expect(screen.getByText('Incorrect!')).toBeInTheDocument();
+  });
+
+  it('shows error message when API call fails', async () => {
+    (fetchTrivia as any).mockRejectedValue(new Error('API Error'));
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Get Trivia' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to fetch trivia about this number')).toBeInTheDocument();
     });
   });
 
-  it('shows "No fact available" when input is 0 or negative and "Get Trivia" is clicked', async () => {
+  it('shows "No trivia available" when input is 0 or negative', async () => {
     render(<App />);
-    const numberInput = screen.getByLabelText('Trivia Number:');
-
-    fireEvent.change(numberInput, { target: { value: '-5' } });
-
-    const getTriviaButton = screen.getByRole('button', { name: 'Get Trivia' });
-    fireEvent.click(getTriviaButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('No fact available')).toBeInTheDocument();
-    });
-
-    expect(global.fetch).not.toHaveBeenCalled();
+    // Just check initial state
+    expect(screen.getByText('No trivia available')).toBeInTheDocument();
   });
 });

@@ -6,6 +6,7 @@ describe('Button Component', () => {
     render(<Button label="Click Me" onClick={() => {}} />);
     const buttonElement = screen.getByText(/Click Me/i);
     expect(buttonElement).toBeInTheDocument();
+    expect(buttonElement.tagName).toBe('BUTTON');
   });
 
   it('calls the onClick handler when clicked', () => {

@@ -1,12 +1,13 @@
 # Trivia World App
 
-Trivia World App is a simple React application that allows users to discover interesting facts about numbers using the [Numbers API](http://numbersapi.com/). Enter a number, click "Get Trivia", and the app will fetch and display a fun fact about that number. You can also toggle the visibility of the trivia fact.
+Trivia World App is a simple React application that allows users to discover interesting trivia questions using the [Open Trivia Database API](https://opentdb.com/). Click "Get Trivia" and the app will fetch and display a fun true/false trivia question. You can answer the question and get instant feedback on whether your answer is correct.
+
+More info can be found here: [Open Trivia Database](https://opentdb.com/api_config.php).
 
 ## Features
 
-- Enter any number to get a trivia fact
-- Fetches facts live from the Numbers API
-- Toggle trivia fact visibility
+- Fetches live trivia questions from the Open Trivia Database API
+- Answer true/false questions and get instant feedback
 - Built with React, TypeScript, and Vite
 - Tested with Vitest and React Testing Library
 
@@ -54,4 +55,4 @@ This app can be deployed to GitHub Pages using the provided GitHub Actions workf
 
 ---
 
-Enjoy discovering trivia about your favorite numbers!
+Enjoy discovering trivia from around the world!

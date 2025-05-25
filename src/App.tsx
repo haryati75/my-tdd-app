@@ -1,47 +1,62 @@
 import { useState } from 'react'
 import './App.css'
 import Button from './components/Button'
-import Input from './components/Input'
+import { decodeHtml } from './util/decodeHtml'
+import { fetchTrivia } from './api/triviaApi'
 
 function App() {
-  const [inputValue, setInputValue] = useState(2)
-  const [showMessage, setShowMessage] = useState(false)
-  const [numberFact, setNumberFact] = useState("No fact available")
-  const labelButton = showMessage ? 'Hide' : 'Show'
+  const [factMessage, setNumberFact] = useState("No trivia available")
+  const [correctAnswer, setCorrectAnswer] = useState<string | null>(null)
+  const [isCorrect, setIsCorrect] = useState(false)
+  const [hasAnswered, setHasAnswered] = useState(false)
 
-  async function fetchNumberFact(num:number) {
+  async function fetchTriviaByNumber(num: number) {
     if (num > 0) {
       try {
-        const response = await fetch(`http://numbersapi.com/${num}`)
-        const data = await response.text()
-        setNumberFact(data)
+        const results = await fetchTrivia(num); 
+        const decodedQuestion = decodeHtml(results[0].question);
+        setNumberFact(decodedQuestion);
+        setCorrectAnswer(results[0].correct_answer);
       } catch (error) {
-        console.error('Error fetching number fact:', error)
-        setNumberFact('Failed to fetch fact about this number')
+        console.error('Error fetching number fact:', error);
+        setNumberFact('Failed to fetch trivia about this number');
+        setCorrectAnswer(null);
       }
     } else {
-      setNumberFact("No fact available")
+      setNumberFact("No trivia available");
+      setCorrectAnswer(null);
     }
-    setShowMessage(true)
-  }  
-
-  function handleToggleMessage() {
-    setShowMessage((prev) => !prev)
+    setHasAnswered(false)
   }
 
-  async function handleInputChange(value: number) {
-    setInputValue(value)
+  function handleGetTriviaClick() {
+    fetchTriviaByNumber(1);
+  }
+
+  function handleTrueClick() {
+    setIsCorrect(correctAnswer === 'True')
+    setHasAnswered(true)
+  }
+  function handleFalseClick() {
+    setIsCorrect(correctAnswer === 'False')
+    setHasAnswered(true)
   }
 
   return (
     <>
       <h1>Trivia World</h1>
-      <Input onChange={handleInputChange} label='Trivia Number:' min={1} value={inputValue}/>
       <div>
-        <Button label="Get Trivia" onClick={async () => await fetchNumberFact(inputValue)} />
-        <Button label={labelButton} onClick={handleToggleMessage} />
+        <Button label="Get Trivia" onClick={handleGetTriviaClick} />
       </div>
-      {showMessage && numberFact && <p>{numberFact}</p>}
+      {factMessage && <p>{factMessage}</p>}
+      {correctAnswer && 
+        <div>
+          <Button label="True" onClick={handleTrueClick} />
+          <Button label="False" onClick={handleFalseClick} />
+        </div>
+      }
+      {hasAnswered && isCorrect && <p>Correct!</p>}
+      {hasAnswered && !isCorrect && <p>Incorrect!</p>}
     </>
   )
 }
