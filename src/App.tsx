@@ -8,8 +8,9 @@ function App() {
   const [factMessage, setFactMessage] = useState("No trivia available")
   const [category, setCategory] = useState<string | null>(null)
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null)
-  const [isCorrect, setIsCorrect] = useState(false)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [hasAnswered, setHasAnswered] = useState(false)
+  const isCorrect = selectedAnswer === correctAnswer;
 
   async function fetchTriviaByNumber(num: number = 1) {
     setFactMessage("Loading trivia...");
@@ -38,12 +39,12 @@ function App() {
   }
 
   function handleTrueClick() {
-    setIsCorrect(correctAnswer === 'True')
-    setHasAnswered(true)
+    setSelectedAnswer('True');
+    setHasAnswered(true);
   }
   function handleFalseClick() {
-    setIsCorrect(correctAnswer === 'False')
-    setHasAnswered(true)
+    setSelectedAnswer('False');
+    setHasAnswered(true);
   }
 
   const answerContent = isCorrect ? <div>Correct!🎉</div> : <div>Incorrect! 😬</div>;
@@ -59,8 +60,8 @@ function App() {
         {factMessage && <p>{factMessage}</p>}
         {correctAnswer && 
           <div className='button-group'>
-            <Button label="True" onClick={handleTrueClick} />
-            <Button label="False" onClick={handleFalseClick} />
+            <Button label="True" onClick={handleTrueClick} disabled={hasAnswered && selectedAnswer !== 'True'} />
+            <Button label="False" onClick={handleFalseClick} disabled={hasAnswered && selectedAnswer !== 'False'} />
           </div>
         }
         {hasAnswered && answerContent}
