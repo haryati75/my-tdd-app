@@ -67,10 +67,10 @@ function App() {
         {hasAnswered && answerContent}
       </div>
       <footer>
-        <>Powered by <span><a href="https://opentdb.com/" target="_blank" rel="noopener noreferrer">
+        <small>Powered by <span><a href="https://opentdb.com/" target="_blank" rel="noopener noreferrer">
             Open Trivia Database
           </a></span>
-        </>
+        </small>
       </footer>
     </>
   )
